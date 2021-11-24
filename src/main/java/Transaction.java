@@ -1,55 +1,46 @@
+import java.time.LocalDate;
+
 public class Transaction {
-    private String Balance;
-    private int deposito;
-    private int retiro;
-    private int tranferencia;
-    private String date;
+    private double balance = 0;
+    private double deposito=0;
+    private double retiro=0;
+    private double tranferencia;
+    private LocalDate date;
 
-    public Transaction(String balance, int deposito, int retiro, int tranferencia, String date) {
-        Balance = balance;
-        this.deposito = deposito;
-        this.retiro = retiro;
-        this.tranferencia = tranferencia;
-        this.date = date;
+    public double getBalance() {
+        return balance;
     }
 
-    public String getBalance() {
-        return Balance;
-    }
-
-    public void setBalance(String balance) {
-        Balance = balance;
-    }
-
-    public int getDeposito() {
+    public double getDeposito() {
         return deposito;
     }
 
-    public void setDeposito(int deposito) {
-        this.deposito = deposito;
-    }
-
-    public int getRetiro() {
+    public double getRetiro() {
         return retiro;
     }
 
-    public void setRetiro(int retiro) {
-        this.retiro = retiro;
-    }
-
-    public int getTranferencia() {
+    public double getTranferencia() {
         return tranferencia;
     }
 
-    public void setTranferencia(int tranferencia) {
-        this.tranferencia = tranferencia;
-    }
-
-    public String getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
-    public void setDate(String date) {
-        this.date = date;
+
+    public Transaction(double amount, LocalDate date, int option, double balance) {
+        this.balance=balance;
+        this.date=date;
+        switch (option) {
+            case 1:
+                this.deposito = amount;
+                break;
+            case 2:
+                this.retiro = amount;
+                break;
+            case 3:
+                this.tranferencia = amount;
+                break;
+        }
     }
 }

@@ -1,23 +1,53 @@
+import jdk.swing.interop.SwingInterOpUtils;
+
 import java.time.LocalDate;
-import java.time.chrono.ChronoLocalDate;
-import java.util.Date;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Comparator;
 
 public class Account {
+    private final int OPTION_DEPO=1;
+    private final int OPTION_WITHDRAW=2;
+    private final int OPTION_TRANSFER=3;
+    private final String MESSAGE="Date         Credit     Debit   Balance\n";
+    private double lastBalance=0;
+    private LocalDate lastDate=LocalDate.now() ;
+    private ArrayList<Transaction> accountMovement;
+    private DateTimeFormatter formatter;
+    private String historyStatements="";
 
-    private double lastBalance;
-    private double lastDate;
-
-
-    public void deposit(int amount ){
-
+    public void deposit(long amount,String date ){
+        this.lastBalance+=amountOf(amount);
+        accountMovement.add(new Transaction(amountOf(amount),date(date),OPTION_DEPO, getLastBalance()));
     }
 
-    public void withdraw(){
-
+    public void withdraw(long amount,String date){
+        this.lastBalance-=amountOf(amount);
+        accountMovement.add(new Transaction(amountOf(amount),date(date),OPTION_WITHDRAW, getLastBalance()));
     }
 
-    public void transfer(){
+    public void transfer(long amount,String date){
+        this.lastBalance-=amountOf(amount);
+        accountMovement.add(new Transaction(amountOf(amount),date(date),OPTION_TRANSFER, getLastBalance()));
+    }
 
+    public double getLastBalance() {
+        return lastBalance;
+    }
+
+
+    public LocalDate getLastDate() {
+        return lastDate;
+    }
+
+    public void printStatements(){
+        accountMovement.stream().filter(x->x.getTranferencia()==0).sorted(Comparator.comparing(Transaction::getDate).reversed()).forEach(x->statements(x));
+        System.out.println(historyStatements);
+    }
+
+    private void statements(Transaction transaction){
+
+        historyStatements+=formatter.format(transaction.getDate())+"     "+transaction.getDeposito()+"     "+transaction.getRetiro()+"     "+transaction.getBalance()+"\n";
     }
 
     private double amountOf(Long mount){
@@ -25,16 +55,19 @@ public class Account {
     }
 
     private LocalDate date(String date){
-        int [] dateInt=convertToIntArray(date.split("/"));
-        return new LocalDate.of(dateInt[0]);
+        try {
+            date=date.replace("/","-");
+            this.lastDate=LocalDate.parse(date,DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+        }catch (Exception e){
+        }
+        return this.lastDate;
     }
 
-    private int[] convertToIntArray(String[] dateStr){
-        int[] dateInt=new int[dateStr.length-1];
-        for (int i=0;i<dateStr.length;i++){
-            dateInt[i]=Integer.parseInt(dateStr[i]);
-        }
-        return dateInt;
+
+    public Account(){
+        accountMovement= new ArrayList<Transaction>();
+        formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        historyStatements+=MESSAGE;
     }
 
 
